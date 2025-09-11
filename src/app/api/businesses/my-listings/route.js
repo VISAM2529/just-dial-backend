@@ -10,14 +10,14 @@ export async function GET(req) {
 
   try {
     const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(role)
     if (role !== 'business_owner') return Response.json({ message: 'Forbidden' }, { status: 403 });
 
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get('status');
+    console.log(searchParams)
     const query = { owner: id };
-    if (status) query.verificationStatus = status;
 
-    const businesses = await Business.find(query).populate('category');
+    const businesses = await Business.find(query)
     return Response.json(businesses);
   } catch {
     return Response.json({ message: 'Invalid token' }, { status: 401 });

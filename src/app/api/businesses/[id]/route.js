@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 export async function GET(req, { params }) {
   await connectDB();
-  const business = await Business.findById(params.id).populate('category');
+  const business = await Business.findById(params.id)
   if (!business) return Response.json({ message: 'Not found' }, { status: 404 });
   return Response.json(business);
 }
