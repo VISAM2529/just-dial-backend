@@ -29,9 +29,6 @@ export async function GET(req) {
     if (status) bookingsQuery.status = status;
 
     const bookings = await Booking.find(bookingsQuery)
-      .populate('customer', 'name')
-      .populate('business', 'name')
-      .sort({ date: -1, time: -1 });
 
     return Response.json(bookings, { status: 200 });
   } catch (error) {
