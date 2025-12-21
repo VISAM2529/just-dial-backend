@@ -72,6 +72,11 @@
             |-- page.jsx
         |-- page.js
     |-- components
+        |-- admin
+            |-- Analytics.jsx
+            |-- CategoryManager.jsx
+            |-- DashboardStats.jsx
+            |-- PendingBusinesses.jsx
         |-- Provider.js
     |-- lib
         |-- auth.js

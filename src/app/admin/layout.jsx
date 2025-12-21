@@ -1,37 +1,37 @@
+// src/app/admin/layout.jsx
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '../../lib/auth';
-import Link from 'next/link';
-import { SessionProvider } from 'next-auth/react';
+
 export default async function AdminLayout({ children }) {
   const session = await getServerSession(authOptions);
-
-  // Debug logging
-  console.log('AdminLayout Session:', {
-    sessionExists: !!session,
-    user: session?.user,
-    role: session?.user?.role,
-  });
 
   if (!session || session.user.role !== 'admin') {
     redirect('/login');
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-indigo-600 text-white p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Admin Dashboard</h1>
-          <div className="space-x-4">
-            <Link href="/admin" className="hover:underline">Dashboard</Link>
-            <Link href="/admin/businesses/pending" className="hover:underline">Pending Businesses</Link>
-            <Link href="/admin/users" className="hover:underline">Users</Link>
-            <Link href="/profile" className="hover:underline">Profile</Link>
-            <Link href="/api/auth/signout" className="hover:underline">Logout</Link>
+    <div className="min-h-screen bg-gray-50">
+      {/* Main Content */}
+      <div>
+        {/* Top Bar */}
+        <header className="bg-white shadow-sm z-10">
+          <div className="flex items-center justify-between h-16 px-6">
+            <div className="text-lg font-semibold text-gray-900">
+              {/* Page title will be set dynamically */}
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-700">Welcome, Admin</span>
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                A
+              </div>
+            </div>
           </div>
-        </div>
-      </nav>
-      <main className="container mx-auto p-6">{children}</main>
+        </header>
+
+        {/* Page Content */}
+        <main className="p-6">{children}</main>
+      </div>
     </div>
   );
 }

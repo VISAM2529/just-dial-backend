@@ -22,6 +22,9 @@ const businessSchema = new mongoose.Schema({
     type: { type: String, default: 'Point' },
     coordinates: [Number],
   },
+  aadharNumber: { type: String, required: true },
+  aadharFrontImage: { type: String, required: true }, // Cloudinary URL
+  aadharBackImage: { type: String, required: true }, // Cloudinary URL
 }, { timestamps: true });
 
 businessSchema.index({ location: '2dsphere' });

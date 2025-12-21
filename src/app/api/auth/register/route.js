@@ -15,14 +15,12 @@ import bcrypt from 'bcryptjs';
 export async function POST(req) {
   await connectDB();
   
-  // Set CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 
-  // Handle OPTIONS request for CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers });
   }
@@ -46,6 +44,26 @@ export async function POST(req) {
       );
     }
 
+    if (role === 'admin') {
+      // Admin registration: directly verified
+      if (!user) {
+        user = new User({ name, email, password, role, verified: true });
+      } else {
+        user.name = name;
+        user.password = password;
+        user.role = role;
+        user.verified = true;
+      }
+
+      await user.save();
+
+      return Response.json(
+        { message: 'Admin registered and verified' },
+        { status: 201, headers }
+      );
+    } 
+
+    // Non-admin flow: Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedOTP = await bcrypt.hash(otp, 10);
     const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
@@ -55,14 +73,12 @@ export async function POST(req) {
       user = new User({ name, email, password, role, verified: false });
     }
 
-    // Set or update OTP
     user.emailOTP = hashedOTP;
     user.emailOTPExpiry = expiry;
     await user.save();
 
-    // Send email
     const transporter = nodemailer.createTransport({
-      service: 'gmail', // Or your email service
+      service: 'gmail', // Or your preferred email service
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,

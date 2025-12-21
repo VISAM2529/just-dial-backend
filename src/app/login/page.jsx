@@ -1,27 +1,41 @@
 'use client';
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    });
+    setLoading(true);
 
-    if (result.error) {
-      setError('Invalid credentials');
-    } else {
-      router.push('/admin');
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        role: 'admin',
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(result.error || 'Login failed');
+        setLoading(false);
+        return;
+      }
+
+      if (result?.ok) {
+        // Redirect to admin dashboard
+        router.push('/admin');
+      }
+    } catch (error) {
+      setError(error.message || 'Invalid credentials');
+      setLoading(false);
     }
   };
 
@@ -29,9 +43,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-10 rounded-xl shadow-lg w-full max-w-md transition-all duration-300">
         <div className="flex flex-col items-center mb-8">
-          {/* Placeholder for branding logo */}
           <img
-            src="/logo.png" // Replace with actual Abhinnati logo path
+            src="/logo.png"
             alt="Abhinnati Logo"
             className="h-12 w-auto mb-4"
           />
@@ -69,9 +82,10 @@ export default function LoginPage() {
           {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white p-3 rounded-md font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white p-3 rounded-md font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
         <p className="mt-6 text-center text-sm text-gray-500">

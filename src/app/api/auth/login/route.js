@@ -21,18 +21,19 @@ export async function POST(req) {
 
   try {
     const { email, password, role } = await req.json();
-    console.log(role)
-    if (!email || !password || !role) {
+
+    if (!email || !password) {
       return NextResponse.json(
-        { message: 'Email, password, and role are required' }, 
+        { message: 'Email and password are required' }, 
         { status: 400, headers }
       );
     }
 
     const user = await User.findOne({ email });
-    
+
     // Check if user exists
     if (!user) {
+      console.log(`User not found: ${email}`);
       return NextResponse.json(
         { message: 'Invalid credentials' }, 
         { status: 401, headers }
@@ -42,30 +43,29 @@ export async function POST(req) {
     // Check if password is correct
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
+      console.log(`Invalid password for user: ${email}`);
       return NextResponse.json(
         { message: 'Invalid credentials' }, 
         { status: 401, headers }
       );
     }
 
-    // Validate that the user is logging in with the correct role
-    // Convert frontend role format to match database format
-    const expectedRole = role === "business_owner" ? "business_owner" : "customer";
-    
-    if (user.role !== expectedRole) {
+    // Validate that the user is logging in with the correct role (if role is provided)
+    if (role && user.role !== role) {
+      console.log(`Role mismatch. User role: ${user.role}, Requested role: ${role}`);
       return NextResponse.json(
-        { message: `Invalid role. Please login as a ${user.role === 'business_owner' ? 'Business Owner' : 'Customer'}` }, 
+        { message: `Invalid role. Please login as a ${user.role}` }, 
         { status: 403, headers }
       );
     }
-    console.log(user.role)
-  
+
+    // Generate JWT token
     const token = jwt.sign(
-  { id: user._id, role: user.role }, 
-  process.env.JWT_SECRET, 
-  { expiresIn: '1d' } // 1 day expiration
-);
-    console.log(token)
+      { id: user._id, role: user.role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1d' }
+    );
+
     return NextResponse.json(
       { 
         token, 
