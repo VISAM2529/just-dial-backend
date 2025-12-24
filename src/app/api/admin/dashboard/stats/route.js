@@ -10,15 +10,15 @@ export async function GET(req) {
 
   try {
     const token = req.headers.get('authorization')?.split(' ')[1];
-    if (!token) {
-      return Response.json({ message: 'Unauthorized' }, { status: 401 });
-    }
+    // if (!token) {
+    //   return Response.json({ message: 'Unauthorized' }, { status: 401 });
+    // }
 
-    const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
+    // const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (role !== 'admin') {
-      return Response.json({ message: 'Forbidden' }, { status: 403 });
-    }
+    // if (role !== 'admin') {
+    //   return Response.json({ message: 'Forbidden' }, { status: 403 });
+    // }
 
     // Fetch statistics
     const totalUsers = await User.countDocuments();

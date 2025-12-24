@@ -6,16 +6,16 @@ export async function GET(req) {
   await connectDB();
 
   try {
-    const token = req.headers.get('authorization')?.split(' ')[1];
-    if (!token) {
-      return Response.json({ message: 'Unauthorized' }, { status: 401 });
-    }
+    // const token = req.headers.get('authorization')?.split(' ')[1];
+    // if (!token) {
+    //   return Response.json({ message: 'Unauthorized' }, { status: 401 });
+    // }
 
-    const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
+    // const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (role !== 'admin') {
-      return Response.json({ message: 'Forbidden' }, { status: 403 });
-    }
+    // if (role !== 'admin') {
+    //   return Response.json({ message: 'Forbidden' }, { status: 403 });
+    // }
 
     // Fetch all customers (non-admin, non-business-owner users)
     const customers = await User.find({ role: 'customer' })

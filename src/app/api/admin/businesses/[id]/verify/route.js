@@ -7,19 +7,20 @@ export async function POST(req, { params }) {
   await connectDB();
 
   try {
-    const token = req.headers.get('authorization')?.split(' ')[1];
-    if (!token) {
-      return Response.json({ message: 'Unauthorized' }, { status: 401 });
-    }
+    // const token = req.headers.get('authorization')?.split(' ')[1];
+    // if (!token) {
+    //   return Response.json({ message: 'Unauthorized' }, { status: 401 });
+    // }
 
-    const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
+    // const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (role !== 'admin') {
-      return Response.json({ message: 'Forbidden' }, { status: 403 });
-    }
+    // if (role !== 'admin') {
+    //   return Response.json({ message: 'Forbidden' }, { status: 403 });
+    // }
 
     const { status, reason } = await req.json(); // 'approved' or 'rejected'
-    const business = await Business.findById(params.id);
+    const {id} = await params
+    const business = await Business.findById(id);
     
     if (!business) {
       return Response.json({ message: 'Business not found' }, { status: 404 });

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "JustDial - Service Directory",
+  title: "Abhinnati",
   description: "Find and manage local services",
 };
 
