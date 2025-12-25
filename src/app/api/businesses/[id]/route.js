@@ -5,7 +5,8 @@ import jwt from 'jsonwebtoken';
 
 export async function GET(req, { params }) {
   await connectDB();
-  const business = await Business.findById(params.id)
+  const {id} = await params;
+  const business = await Business.findById(id)
   if (!business) return Response.json({ message: 'Not found' }, { status: 404 });
   return Response.json(business);
 }
@@ -17,6 +18,7 @@ export async function PUT(req, { params }) {
 
   try {
     const { id: userId } = jwt.verify(token, process.env.JWT_SECRET);
+    
     const business = await Business.findById(params.id);
     if (!business || business.owner.toString() !== userId) return Response.json({ message: 'Forbidden' }, { status: 403 });
 
