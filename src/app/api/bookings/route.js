@@ -1,6 +1,7 @@
 import connectDB from '@/lib/db';
 import Booking from '@/models/Booking';
 import Business from '@/models/Business';
+import User from '@/models/User';
 import jwt from 'jsonwebtoken';
 
 export async function GET(req) {
@@ -27,7 +28,7 @@ export async function GET(req) {
     if (status) query.status = status;
     if (upcoming) query.date = { $gte: new Date() };
 
-    const bookings = await Booking.find(query);
+    const bookings = await Booking.find(query).populate('customer', 'name');
     return Response.json(bookings);
   } catch {
     return Response.json({ message: 'Invalid token' }, { status: 401 });
@@ -58,10 +59,17 @@ export async function POST(req) {
       return Response.json({ message: 'Business not found' }, { status: 404 });
     }
 
+    // specific check for user existence to get the name
+    const user = await User.findById(userId);
+    if (!user) {
+      return Response.json({ message: 'User not found' }, { status: 404 });
+    }
+
     // Create booking
     const booking = new Booking({
       business: businessId,
       customer: userId,
+      customerName: user.name,
       date: new Date(date),
       time,
       service,

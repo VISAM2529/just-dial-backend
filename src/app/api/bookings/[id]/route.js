@@ -10,7 +10,8 @@ export async function PUT(req, { params }) {
 
   try {
     const { id: userId, role } = jwt.verify(token, process.env.JWT_SECRET);
-    const booking = await Booking.findById(params.id).populate('business');
+    const { id } = await params; // Await params
+    const booking = await Booking.findById(id).populate('business').populate('customer', 'name');
     if (!booking) return Response.json({ message: 'Not found' }, { status: 404 });
 
     const isOwner = role === 'business_owner' && booking.business.owner.toString() === userId;
@@ -33,7 +34,8 @@ export async function DELETE(req, { params }) {
 
   try {
     const { id: userId, role } = jwt.verify(token, process.env.JWT_SECRET);
-    const booking = await Booking.findById(params.id).populate('business');
+    const { id } = await params; // Await params
+    const booking = await Booking.findById(id).populate('business').populate('customer', 'name');
     if (!booking) return Response.json({ message: 'Not found' }, { status: 404 });
 
     const isOwner = role === 'business_owner' && booking.business.owner.toString() === userId;
