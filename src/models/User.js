@@ -16,8 +16,19 @@ const userSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   resetToken: { type: String },
   verified: { type: Boolean, default: false },
-emailOTP: { type: String },
-emailOTPExpiry: { type: Date },
+  emailOTP: { type: String },
+  emailOTPExpiry: { type: Date },
+  settings: {
+    notifications: {
+      email: { type: Boolean, default: true },
+      push: { type: Boolean, default: true },
+      sms: { type: Boolean, default: true },
+    },
+    privacy: {
+      profileVisibility: { type: String, enum: ['public', 'private', 'friends'], default: 'public' },
+    },
+    language: { type: String, default: 'en' },
+  },
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
